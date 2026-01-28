@@ -1,0 +1,38 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Java / Gradle
+build/
+.gradle/
+bin/
+out/
+.settings/
+.classpath
+.project
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+.eslintcache
+
+# Logs & Temp
+*.log
+temp/
+tmp/
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Environment Variables (Optional but recommended)
+.env
+.env.*
+!.env.example

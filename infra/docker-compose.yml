@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 1. Issuer DB (PostgreSQL)
+  issuer-db:
+    image: postgres:15
+    container_name: issuer-db
+    environment:
+      POSTGRES_DB: issuerdb
+      POSTGRES_USER: issuer
+      POSTGRES_PASSWORD: issuerpass
+    ports:
+      - "5433:5432" # Host mapping 5433 -> Container 5432
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - callcenter-net
+
+  # 2. Issuer WAS (Spring Boot)
+  issuer-was:
+    build: ../issuer-was
+    container_name: issuer-was
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://issuer-db:5432/issuerdb
+      SPRING_DATASOURCE_USERNAME: issuer
+      SPRING_DATASOURCE_PASSWORD: issuerpass
+      ISSUER_SERVICE_TOKEN: local-dev-token
+    depends_on:
+      - issuer-db
+    networks:
+      - callcenter-net
+
+  # 3. Callcenter WAS (Spring Boot)
+  callcenter-was:
+    build: ../callcenter-was
+    container_name: callcenter-was
+    ports:
+      - "8080:8080"
+    environment:
+      ISSUER_BASE_URL: http://issuer-was:8081
+      ISSUER_SERVICE_TOKEN: local-dev-token
+    depends_on:
+      - issuer-was
+    networks:
+      - callcenter-net
+
+  # 4. Issuer Web (React)
+  issuer-web:
+    build: ../issuer-web
+    container_name: issuer-web
+    ports:
+      - "5174:5174"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8081 # Browser calls this directly? No, usually proxied or CORS. Assuming direct call for now based on req.
+    depends_on:
+      - issuer-was
+    networks:
+      - callcenter-net
+
+  # 5. Callcenter Web (React)
+  callcenter-web:
+    build: ../callcenter-web
+    container_name: callcenter-web
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      - callcenter-was
+    networks:
+      - callcenter-net
+
+networks:
+  callcenter-net:
+    driver: bridge
