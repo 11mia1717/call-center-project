@@ -1,58 +1,72 @@
-# Call Center & Issuer Microservices Simulation
+# K Card 콜센터 & 카드사 시뮬레이션 (Microservices)
 
-카드사(Issuer)와 콜센터(Call Center)의 수탁 업무 흐름을 모사한 마이크로서비스 프로젝트입니다.
-물리적/논리적으로 분리된 두 조직의 시스템을 재현했습니다.
+이 프로젝트는 카드사(Issuer)와 콜센터(Call Center) 간의 위수탁 업무 흐름을 모사한 마이크로서비스 프로젝트입니다. 보안을 위해 물리적/논리적으로 분리된 두 조직의 시스템 환경을 재현했습니다. 
 
-## 🏗️ Architecture
-- **Issuer Domain (위탁사)**
-  - `issuer-was` (Spring Boot 4, Port 8081): 핵심 금융 로직, DB(PostgreSQL) 보유.
-  - `issuer-web` (React, Port 5174): 카드사 관제/모니터링 콘솔.
-  - `issuer-db` (Postgres, Port 5433): 고객/카드/인증 원장 데이터.
-- **Call Center Domain (수탁사)**
-  - `callcenter-was` (Spring Boot 4, Port 8080): 상담원 업무 처리, 개인정보 미저장(Proxy).
-  - `callcenter-web` (React, Port 5173): 상담원 전용 포털 (프리미엄 UI).
+각 서비스는 **완독립적인(Standalone)** 구조로 설계되어 있어, 개발 환경에서 개별적으로 구동하고 관리하기 최적화되어 있습니다.
 
-## 🚀 Getting Started (Docker Compose)
-가장 간편한 실행 방법입니다.
+## 🏗️ 시스템 구성 (Architecture)
 
-1. **Build & Run**
-   ```bash
-   cd infra
-   docker-compose up --build -d
-   ```
-   > ⚠️ `issuer-was`와 `callcenter-was`의 빌드가 필요하므로 최초 실행 시 시간이 소요될 수 있습니다.
+### 1. K Card (카드사 영역)
+- **issuer-was** (Spring Boot, Port 8081): 핵심 금융 로직 및 고객/카드 원장 관리.
+- **issuer-web** (React/Vite, Port 5174): 위탁사 전용 모니터링/관제 시스템.
+- **issuer-db** (PostgreSQL, Port 5433): 금융 데이터 저장소.
 
-2. **Access**
-   - **Call Center Portal**: [http://localhost:5173](http://localhost:5173)
-   - **Issuer Admin**: [http://localhost:5174](http://localhost:5174)
+### 2. 콜센터 포털 (수탁사 영역)
+- **callcenter-was** (Spring Boot, Port 8080): 상담원 업무 보조 및 카드사 대행 Proxy. (개인정보 미저장)
+- **callcenter-web** (React/Vite, Port 5173): 상담원 전용 업무 포털 (K Card 콜센터).
 
-## 🧪 Search Scenario (Test Guide)
-1. **상담원 로그인** (`callcenter-web`)
-   - 접속 후 'Agent Sign In' 클릭 (자동 로그인).
-2. **고객 검색**
-   - ANI(발신번호) `01012345678` 입력 후 검색.
-   - 마스킹된 정보 확인.
-3. **본인 인증 (OTP)**
-   - 이름/생년월일 확인(기본값 사용) 후 **Send OTP** 클릭.
-   - OTP는 `issuer-was`의 로그에서만 확인 가능합니다.
-     ```bash
-     docker logs issuer-was
-     # Look for: [OTP-SENT] CustomerRef: ..., OTP: 123456
-     ```
-   - 확인된 6자리 숫자를 입력하고 **Verify** 클릭.
-4. **분실 신고**
-   - **Report All Cards Lost** 버튼 클릭.
-   - 경고창 확인 -> 확인.
-   - 분실 처리 결과(Cards Stopped) 및 Loss Case ID 확인.
-5. **결과 확인** (`issuer-web`)
-   - **Audit Log** 탭: `CARD_LOSS` 이벤트 수신 확인.
-   - **Customer Cards** 탭: Customer Ref `11111111-1111-1111-1111-111111111111` 검색 시 Status가 `LOST`로 변경된 것 확인.
+---
 
-## 🛠️ Configuration
-환경변수를 통해 연결 정보를 제어합니다 (`infra/docker-compose.yml` 참조).
-- `ISSUER_SERVICE_TOKEN`: 서비스 간 통신 보안 (기본: `local-dev-token`).
-- `ISSUER_BASE_URL`: Callcenter WAS가 Issuer WAS를 호출하는 주소.
+## 🚀 시작하기 (Execution Guide)
 
-## ⚠️ Notes
-- 개인정보(이름, 전화번호, 카드번호)는 API 응답 시 항상 마스킹 처리됩니다.
-- Callcenter WAS는 어떤 DB도 사용하지 않으며 메모리 세션만 유지합니다.
+### 1단계: 데이터베이스 및 기본 인프라 실행 (Docker)
+가상 인프라 환경(DB)을 먼저 실행해야 합니다.
+```powershell
+# c:\dev\call-center 폴더에서
+docker compose -f infra/docker-compose-db.yml up -d
+```
+
+### 2단계: 백엔드 서버 실행 (Spring Boot)
+두 개의 WAS를 각각 실행합니다. (새 터미널 권장)
+```powershell
+# Issuer WAS 실행
+cd issuer-was
+./gradlew bootRun
+
+# Callcenter WAS 실행
+cd callcenter-was
+./gradlew bootRun
+```
+
+### 3단계: 프론트엔드 실행 (React)
+두 개의 웹 서비스를 각각 실행합니다. (새 터미널 권장)
+```powershell
+# Issuer Admin 실행 (Port 5174)
+cd issuer-web
+npm install
+npm run dev
+
+# Callcenter Portal 실행 (Port 5173)
+cd callcenter-web
+npm install
+npm run dev
+```
+
+---
+
+## 🧪 시나리오 테스트 가이드
+
+1. **상담원 로그인**: [http://localhost:5173](http://localhost:5173) (K Card 콜센터) 접속 후 로그인.
+2. **고객 조회**: ANI(발신번호) `01012345678` 입력 후 검색.
+3. **본인 인증**: 성명(`홍길동`), 생년월일(`800101`) 입력 후 인증번호 발송. (로그 확인 필요)
+   - **OTP 로그 확인**: `issuer-was` 콘솔창에서 `[OTP-SENT] ... OTP: 123456` 로그 확인.
+4. **선택적 카드 정지**: 인증 성공 후 나타나는 카드 목록에서 정지할 카드를 선택(체크)하고 **[선택한 n개 카드 정지]** 클릭.
+5. **관리자 확인**: [http://localhost:5174](http://localhost:5174) (위탁사 관리자) 접속.
+   - **Audit Events**: `CARD_LOSS` 로그 발생 확인.
+   - **Customer Cards**: 해당 고객 ID(`11111111-1111-1111-1111-111111111111`) 검색 시 카드 상태가 `LOST`로 변경된 것 확인.
+
+---
+
+## ⚠️ 주의사항
+- **보안**: 모든 API 응답 시 이름, 전화번호, 카드번호는 마스킹 처리됩니다.
+- **무상태(Stateless)**: 콜센터 WAS는 고객 정보를 저장하지 않으며, 모든 요청은 카드사 WAS를 통해 대행 처리됩니다.
