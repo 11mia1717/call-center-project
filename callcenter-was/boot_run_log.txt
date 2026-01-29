@@ -1,0 +1,82 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :resolveMainClassName UP-TO-DATE
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-01-29T10:58:56.049+09:00  INFO 31876 --- [callcenter-was] [           main] c.g.c.CallCenterWasApplication           : Starting CallCenterWasApplication using Java 21.0.9 with PID 31876 (C:\ContinueProject\call-center-project\callcenter-was\build\classes\java\main started by ez in C:\ContinueProject\call-center-project\callcenter-was)
+2026-01-29T10:58:56.053+09:00  INFO 31876 --- [callcenter-was] [           main] c.g.c.CallCenterWasApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-01-29T10:58:56.541+09:00  INFO 31876 --- [callcenter-was] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-29T10:58:56.578+09:00  INFO 31876 --- [callcenter-was] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 31 ms. Found 1 JPA repository interface.
+2026-01-29T10:58:56.893+09:00  INFO 31876 --- [callcenter-was] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8082 (http)
+2026-01-29T10:58:56.903+09:00  INFO 31876 --- [callcenter-was] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-29T10:58:56.903+09:00  INFO 31876 --- [callcenter-was] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-01-29T10:58:56.936+09:00  INFO 31876 --- [callcenter-was] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-29T10:58:56.937+09:00  INFO 31876 --- [callcenter-was] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 829 ms
+2026-01-29T10:58:57.020+09:00  INFO 31876 --- [callcenter-was] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-29T10:58:57.052+09:00  INFO 31876 --- [callcenter-was] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-01-29T10:58:57.077+09:00  INFO 31876 --- [callcenter-was] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-01-29T10:58:57.248+09:00  INFO 31876 --- [callcenter-was] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-29T10:58:57.268+09:00  INFO 31876 --- [callcenter-was] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-29T10:58:57.387+09:00  INFO 31876 --- [callcenter-was] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:callcenterdb user=SA
+2026-01-29T10:58:57.391+09:00  INFO 31876 --- [callcenter-was] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-29T10:58:57.439+09:00  INFO 31876 --- [callcenter-was] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-29T10:58:58.065+09:00  INFO 31876 --- [callcenter-was] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table agents (agent_id varchar(255) not null, name varchar(255), password varchar(255), role varchar(255), primary key (agent_id))
+2026-01-29T10:58:58.110+09:00  INFO 31876 --- [callcenter-was] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-29T10:58:58.528+09:00  WARN 31876 --- [callcenter-was] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-29T10:58:58.804+09:00  WARN 31876 --- [callcenter-was] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-01-29T10:58:58.805+09:00  INFO 31876 --- [callcenter-was] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-29T10:58:58.806+09:00  INFO 31876 --- [callcenter-was] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-29T10:58:58.812+09:00  INFO 31876 --- [callcenter-was] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-01-29T10:58:58.831+09:00  INFO 31876 --- [callcenter-was] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-29T10:58:58.853+09:00 ERROR 31876 --- [callcenter-was] [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8082 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8082 or configure this application to listen on another port.
+
+
+> Task :bootRun FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bootRun'.
+> Process 'command 'C:\Program Files\Eclipse Adoptium\jdk-21.0.9.10-hotspot\bin\java.exe'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 5s
+4 actionable tasks: 1 executed, 3 up-to-date

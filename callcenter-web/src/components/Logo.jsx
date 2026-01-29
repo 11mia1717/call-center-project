@@ -23,23 +23,40 @@ const Logo = ({ className = "", showSlogan = false }) => {
         }}>
           <Infinity size={26} color="white" />
         </div>
-        <span className="logo-text" style={{
-          fontSize: '21px',
-          fontWeight: 'bold',
+        <span style={{ 
+          fontSize: '21px', 
+          fontWeight: 800, 
           color: '#1A1A1A',
-          letterSpacing: '-1px'
+          letterSpacing: '-1px',
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: '4px'
         }}>
-          Continue Card <span style={{ color: '#1A73E8' }}>콜센터</span>
+          Continue Bank <span style={{ fontSize: '24px', color: '#1A73E8', fontWeight: 900 }}>TM</span>
         </span>
       </div>
+      
+      {/* Subtitle: by DAVADA */}
+      <div style={{ 
+        fontSize: '11px', 
+        color: '#6B7280', 
+        fontWeight: 600, 
+        letterSpacing: '0.05em',
+        marginTop: '-2px',
+        opacity: 0.8
+      }}>
+        by DAVADA
+      </div>
+
       {showSlogan && (
-        <div className="logo-slogan" style={{
-          fontSize: '13px',
-          fontWeight: '700',
-          color: '#1A73E8',
-          letterSpacing: '-0.2px',
+        <div style={{ 
+          fontSize: '13px', 
+          fontWeight: 700, 
+          color: '#1A73E8', 
           marginTop: '4px',
-          opacity: 0.9
+          opacity: 0.9,
+          letterSpacing: '-0.02em',
+          animation: 'fadeIn 0.5s ease-out'
         }}>
           당신의 금융은 멈추지 않도록, 보안은 계속됩니다.
         </div>

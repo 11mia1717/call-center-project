@@ -1,19 +1,16 @@
-# Continue Card 콜센터 & 카드사 시뮬레이션 (Microservices)
+# Continue Bank 콜센터 & 카드사 시뮬레이션 (Microservices)
 
-이 프로젝트는 카드사(Issuer)와 콜센터(Call Center) 간의 위수탁 업무 흐름을 모사한 마이크로서비스 프로젝트입니다. 보안을 위해 물리적/논리적으로 분리된 두 조직의 시스템 환경을 재현했습니다. 
-
-각 서비스는 **완독립적인(Standalone)** 구조로 설계되어 있어, 개발 환경에서 개별적으로 구동하고 관리하기 최적화되어 있습니다.
+2026년 금융권 IT 프로젝트 프레임워크 구축을 위한 Reference Project입니다. 카드사(Issuer), 위탁 콜센터(TM Center), 그리고 연동된 제3자 서비스(Entrusting Client) 간의 개인정보 보호 및 컴플라이언스 워크플로우를 구현합니다.
 
 ## 🏗️ 시스템 구성 (Architecture)
 
-### 1. Continue Card (카드사 영역)
-- **issuer-was** (Spring Boot, Port 8081): 핵심 금융 로직 및 고객/카드 원장 관리.
-- **issuer-web** (React/Vite, Port 5174): 위탁사 전용 모니터링/관제 시스템.
-- **issuer-db** (PostgreSQL, Port 5433): 금융 데이터 저장소.
+### 1. Continue Bank (카드사 영역)
+- **issuer-was** (Spring Boot, Port 8081): 카드 발급, 고객 정보 관리, V-PASS 본인인증 제공자 API.
+    - H2 Database (In-Memory, Port 8081 Console)
+- **issuer-web** (React/Vite, Port 5174): 카드사 내부 관리자 시스템 (Admin).
 
-### 2. 콜센터 포털 (수탁사 영역)
-- **callcenter-was** (Spring Boot, Port 8082): 상담원 업무 보조 및 카드사 대행 Proxy. (개인정보 미저장)
-- **callcenter-web** (React/Vite, Port 5173): 상담원 전용 업무 포털 (Continue Card 콜센터).
+### 2. TM Center (콜센터 영역)
+- **callcenter-web** (React/Vite, Port 5173): 상담원 전용 업무 포털 (Continue Bank 콜센터). (개인정보 미저장)
 
 ---
 

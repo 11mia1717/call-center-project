@@ -2,6 +2,7 @@ package com.gwangjin.callcenterwas.api.controller;
 
 import com.gwangjin.callcenterwas.common.session.SessionManager;
 import com.gwangjin.callcenterwas.infrastructure.client.IssuerClient;
+import com.gwangjin.callcenterwas.infrastructure.client.EntrustingClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 public class CallCenterProxyController {
 
     private final IssuerClient issuerClient;
+    private final EntrustingClient entrustingClient;
     private final SessionManager sessionManager;
 
     private SessionManager.OperatorSession getSession(HttpServletRequest request) {
@@ -22,10 +24,15 @@ public class CallCenterProxyController {
         return sessionManager.getSession(token);
     }
 
+    /**
+     * Customer search now queries Entrusting Client (위탁사) for compliance.
+     * Returns masked customer data.
+     */
     @PostMapping("/customer/candidates")
     public Map<String, Object> findCandidates(@RequestBody Map<String, String> request,
             HttpServletRequest servletRequest) {
-        return issuerClient.findCandidates(request);
+        String phone = request.get("phone");
+        return entrustingClient.searchCustomer(phone);
     }
 
     @PostMapping("/auth/request")
