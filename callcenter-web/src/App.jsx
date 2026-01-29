@@ -4,6 +4,8 @@ import LoginPage from './pages/LoginPage';
 import SearchPage from './pages/SearchPage';
 import AuthPage from './pages/AuthPage';
 import LossPage from './pages/LossPage';
+import OutboundPage from './pages/OutboundPage';
+import OutboundCallPage from './pages/OutboundCallPage';
 
 function Layout({ children }) {
   return (
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/loss" element={<LossPage />} />
+          <Route path="/outbound" element={<OutboundPage />} />
+          <Route path="/outbound/call" element={<OutboundCallPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>

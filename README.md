@@ -1,4 +1,4 @@
-# K Card 콜센터 & 카드사 시뮬레이션 (Microservices)
+# Continue Card 콜센터 & 카드사 시뮬레이션 (Microservices)
 
 이 프로젝트는 카드사(Issuer)와 콜센터(Call Center) 간의 위수탁 업무 흐름을 모사한 마이크로서비스 프로젝트입니다. 보안을 위해 물리적/논리적으로 분리된 두 조직의 시스템 환경을 재현했습니다. 
 
@@ -6,14 +6,14 @@
 
 ## 🏗️ 시스템 구성 (Architecture)
 
-### 1. K Card (카드사 영역)
+### 1. Continue Card (카드사 영역)
 - **issuer-was** (Spring Boot, Port 8081): 핵심 금융 로직 및 고객/카드 원장 관리.
 - **issuer-web** (React/Vite, Port 5174): 위탁사 전용 모니터링/관제 시스템.
 - **issuer-db** (PostgreSQL, Port 5433): 금융 데이터 저장소.
 
 ### 2. 콜센터 포털 (수탁사 영역)
-- **callcenter-was** (Spring Boot, Port 8080): 상담원 업무 보조 및 카드사 대행 Proxy. (개인정보 미저장)
-- **callcenter-web** (React/Vite, Port 5173): 상담원 전용 업무 포털 (K Card 콜센터).
+- **callcenter-was** (Spring Boot, Port 8082): 상담원 업무 보조 및 카드사 대행 Proxy. (개인정보 미저장)
+- **callcenter-web** (React/Vite, Port 5173): 상담원 전용 업무 포털 (Continue Card 콜센터).
 
 ---
 
@@ -56,7 +56,7 @@ npm run dev
 
 ## 🧪 시나리오 테스트 가이드
 
-1. **상담원 로그인**: [http://localhost:5173](http://localhost:5173) (K Card 콜센터) 접속 후 로그인.
+1. **상담원 로그인**: [http://localhost:5173](http://localhost:5173) (Continue Card 콜센터) 접속 후 로그인.
 2. **고객 조회**: ANI(발신번호) `01012345678` 입력 후 검색.
 3. **본인 인증**: 성명(`홍길동`), 생년월일(`800101`) 입력 후 인증번호 발송. (로그 확인 필요)
    - **OTP 로그 확인**: `issuer-was` 콘솔창에서 `[OTP-SENT] ... OTP: 123456` 로그 확인.

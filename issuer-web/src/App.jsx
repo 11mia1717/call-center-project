@@ -8,11 +8,11 @@ export default function App() {
     return (
         <div className="app-container">
             <header className="header">
-                <div className="brand">
-                    <div style={{ width: 32, height: 32, background: 'var(--primary)', borderRadius: 8, display: 'flex', alignItems: 'center', justifySelf: 'center' }}>
-                        <div style={{ width: 16, height: 16, border: '3px solid #fff', borderRadius: '50%', margin: '0 auto' }} />
+                <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: 14, height: 14, border: '3px solid #fff', borderRadius: '50%' }} />
                     </div>
-                    카드사 관리자
+                    Continue Card Admin
                 </div>
                 <div className="nav-buttons">
                     <button

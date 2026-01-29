@@ -58,6 +58,7 @@ public class IssuerAuthService {
         return Map.of(
                 "authTxId", authTxId,
                 "status", "OTP_SENT",
+                "devOtp", otp, // [DEV ONLY] Direct exposure for testing
                 "expireSeconds", 180);
     }
 

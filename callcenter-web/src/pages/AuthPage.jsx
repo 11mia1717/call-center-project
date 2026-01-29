@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../api/client';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 export default function AuthPage() {
     const { state } = useLocation();
@@ -26,7 +27,8 @@ export default function AuthPage() {
             });
             setAuthTxId(res.authTxId);
             setStep('VERIFY');
-            alert(`인증번호가 발송되었습니다! (인증 트랜잭션 ID: ${res.authTxId})`);
+            // [DEV ONLY] Show OTP for easier testing
+            alert(`인증번호가 발송되었습니다!\n\n[개발용] 인증번호: ${res.devOtp || '확인불가'}\n(인증 트랜잭션 ID: ${res.authTxId})`);
         } catch (e) {
             alert('인증번호 요청에 실패했습니다.');
         } finally {
@@ -57,10 +59,12 @@ export default function AuthPage() {
     if (!customer) return <div className="padding">고객 정보가 선택되지 않았습니다.</div>;
 
     return (
-        <div className="padding animate-fade">
-            <div style={{ marginBottom: 32 }}>
+        <div className="bg-gray-50 min-h-screen py-8">
+            <div className="max-w-3xl mx-auto px-6">
+            <div style={{ marginBottom: 48 }}>
+                <Logo style={{ marginBottom: '24px' }} />
                 <h1>본인 인증</h1>
-                <p style={{ color: 'var(--text-dim)' }}>고객의 안전한 업무 대행을 위해 본인 확인 절차를 진행합니다.</p>
+                <p style={{ color: 'var(--text-dim)', fontWeight: 500 }}>고객의 안전한 업무 대행을 위해 본인 확인 절차를 진행합니다.</p>
             </div>
 
             <div className="card">
@@ -106,6 +110,7 @@ export default function AuthPage() {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }

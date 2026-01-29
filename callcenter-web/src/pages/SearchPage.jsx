@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../api/client';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 export default function SearchPage() {
     const [phone, setPhone] = useState('01012345678'); // Default format from seed
@@ -26,10 +27,12 @@ export default function SearchPage() {
     };
 
     return (
-        <div className="padding animate-fade">
-            <div style={{ marginBottom: 40 }}>
+        <div className="bg-gray-50 min-h-screen py-8">
+            <div className="max-w-3xl mx-auto px-6">
+            <div style={{ marginBottom: 48 }}>
+                <Logo style={{ marginBottom: '24px' }} />
                 <h1>고객 조회</h1>
-                <p style={{ color: 'var(--text-dim)', fontSize: '15px' }}>수신 전화번호(ANI)를 입력하여 가입 고객 정보를 확인하세요.</p>
+                <p style={{ color: 'var(--text-dim)', fontSize: '15px', fontWeight: 500 }}>수신 전화번호(ANI)를 입력하여 가입 고객 정보를 확인하세요.</p>
             </div>
 
             <div className="card">
@@ -48,9 +51,11 @@ export default function SearchPage() {
                 </button>
             </div>
 
-            <div className="info-box" style={{ marginTop: 24 }}>
-                <strong>Tip</strong>
-                <p style={{ marginTop: 8 }}>입력된 번호는 카드사 시스템과 연동되어 실시간으로 고객을 식별합니다.</p>
+            <div className="card" style={{ marginTop: 32, backgroundColor: 'var(--bg-dim)' }}>
+                <p style={{ fontSize: '14px', color: 'var(--text-dim)', lineHeight: 1.6 }}>
+                    ※ 조회된 고객이 없을 경우, 번호를 다시 확인하거나 신규 가입 안내를 진행하세요.
+                </p>
+            </div>
             </div>
         </div>
     );

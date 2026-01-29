@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 export default function LossPage() {
     const { state } = useLocation();
@@ -76,7 +77,8 @@ export default function LossPage() {
 
     if (complete) {
         return (
-            <div className="padding animate-fade">
+            <div className="bg-gray-50 min-h-screen py-8">
+                <div className="max-w-3xl mx-auto px-6">
                 <div style={{ textAlign: 'center', margin: '48px 0' }}>
                     <div style={{ fontSize: 60, marginBottom: 24 }}>✨</div>
                     <h1 style={{ marginBottom: 12 }}>사고 신고 접수 완료</h1>
@@ -98,18 +100,21 @@ export default function LossPage() {
                 )}
 
                 <div className="spacer" style={{ height: 32 }} />
-                <button className="btn" onClick={handleEndSession}>
+                <button className="btn" onClick={handleEndSession} style={{ marginTop: 32 }}>
                     상담 종료
                 </button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="padding animate-fade">
-            <div style={{ marginBottom: 32 }}>
+        <div className="bg-gray-50 min-h-screen py-8">
+            <div className="max-w-3xl mx-auto px-6">
+            <div style={{ marginBottom: 48 }}>
+                <Logo style={{ marginBottom: '24px' }} />
                 <h1>카드 분실 신고</h1>
-                <p style={{ color: 'var(--text-dim)' }}>인증이 완료되었습니다. 아래 카드들을 정지 처리합니다.</p>
+                <p style={{ color: 'var(--text-dim)', fontWeight: 500 }}>인증이 완료되었습니다. 아래 카드들을 정지 처리합니다.</p>
             </div>
 
             <div style={{ marginBottom: 24 }}>
@@ -169,6 +174,7 @@ export default function LossPage() {
             <button className="btn" style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text-dim)', marginTop: 12 }} onClick={handleEndSession}>
                 취소 후 종료
             </button>
+            </div>
         </div>
     );
 }
