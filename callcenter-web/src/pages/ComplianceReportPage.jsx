@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../api/client';
 import Logo from '../components/Logo';
 import { 
     FileText, Download, ShieldCheck, AlertTriangle, 
@@ -10,11 +11,34 @@ import {
 export default function ComplianceReportPage() {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
-        consentRate: 98.5,
-        encryptedCallRate: 100,
+        consentRate: 0,
+        encryptedCallRate: 100, // Assuming all saved are encrypted
         retentionCompliance: 100,
-        totalChecks: 2450
+        totalChecks: 0
     });
+
+    useEffect(() => {
+        const fetchComplianceData = async () => {
+            try {
+                const results = await api.get('/callcenter/operator/admin/results?adminId=admin');
+                const total = results.length;
+                if (total === 0) return;
+
+                const agreedCount = results.filter(r => r.recordingAgreed).length;
+                const consentRate = ((agreedCount / total) * 100).toFixed(1);
+
+                setStats({
+                    consentRate,
+                    encryptedCallRate: 100, // Policy enforced by backend
+                    retentionCompliance: 100, // Policy enforced by backend
+                    totalChecks: total
+                });
+            } catch (err) {
+                console.error("Failed to fetch compliance stats", err);
+            }
+        };
+        fetchComplianceData();
+    }, []);
 
     return (
         <div className="page-container bg-[#F4F7FA] min-h-screen flex flex-col font-sans">

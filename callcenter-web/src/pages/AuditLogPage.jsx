@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../api/client';
 import Logo from '../components/Logo';
 import { 
     FileText, Search, Filter, ShieldCheck, 
@@ -13,33 +14,41 @@ export default function AuditLogPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Load simulated audit logs from localStorage or generate mock data
-        const loadLogs = () => {
+        const fetchLogs = async () => {
             setLoading(true);
-            const savedLogs = JSON.parse(localStorage.getItem('audit_logs') || '[]');
-            
-            // If empty, generate some mock data for demonstration
-            if (savedLogs.length === 0) {
-                const mockLogs = Array.from({ length: 15 }).map((_, i) => ({
-                    id: `AUDIT-${20260129}-${1000 + i}`,
-                    timestamp: new Date(Date.now() - i * 3600000).toISOString(),
-                    type: i % 2 === 0 ? 'OUTBOUND' : 'INBOUND',
-                    agentId: 'AGT001',
-                    customerName: `고객${i+1}`,
-                    customerPhone: `010-****-${1000+i}`,
-                    result: '상담 완료',
-                    recordingAgreed: true,
-                    duration: '03:45',
-                    action: 'Call Completed'
-                }));
-                setAuditLogs(mockLogs);
-            } else {
-                setAuditLogs(savedLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
+            try {
+                // Fetch real audit logs directly from Trustee Backend (S2S Endpoint)
+                // In production, this should be proxied via callcenter-backend
+                const response = await fetch('http://localhost:8080/api/v1/s2s/audit/logs');
+                const data = await response.json();
+                
+                // Map backend fields to UI model
+                // Backend AccessLog: { id, userId, accessorType, accessorId, action, details, ipAddress, accessedAt }
+                const mappedLogs = Array.isArray(data) ? data.map(log => ({
+                    id: `AUDIT-${log.id}`,
+                    timestamp: log.accessedAt,
+                    type: log.accessorType, 
+                    agentId: log.accessorId,
+                    customerName: `UID:${log.userId}`, // We don't have name here, just ID
+                    customerPhone: log.ipAddress, // Use IP for "Location/Phone" column or rename column
+                    result: log.details,
+                    recordingAgreed: log.details.includes('Agreed'),
+                    action: log.action
+                })) : [];
+                
+                setAuditLogs(mappedLogs);
+            } catch (err) {
+                console.error("Failed to fetch audit logs", err);
+                // Demo fallback
+                setAuditLogs([
+                    { id: 'AUDIT-DEMO', timestamp: new Date().toISOString(), type: 'TM_AGENT', agentId: 'agent01', customerName: '김*수', customerPhone: '192.168.0.1', result: '데모 데이터: 백엔드 연결 실패', action: 'VIEW_360' }
+                ]);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         
-        loadLogs();
+        fetchLogs();
     }, []);
 
     return (

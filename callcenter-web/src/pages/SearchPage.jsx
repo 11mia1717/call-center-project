@@ -5,7 +5,7 @@ import Logo from '../components/Logo';
 import { Mic, MessageSquare, User, AlertCircle, Search, LogOut, ChevronRight, ShieldCheck } from 'lucide-react';
 
 export default function SearchPage() {
-    const [phone, setPhone] = useState('010-0000-0000'); // 테스트 고객 기본값 (포맷 포함)
+    const [phone, setPhone] = useState(''); // 초기값 제거
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -27,24 +27,33 @@ export default function SearchPage() {
         const rawPhone = phone.replace(/-/g, ''); // API 전송 시 하이픈 제거
         
         if (rawPhone.length < 10) {
-            alert('올바른 전화번호를 입력해 주세요. (예: 010-0000-0000)');
+            const msg = encodeURIComponent('올바른 전화번호를 입력해 주세요. (예: 010-0000-0000)');
+            navigate(`/bridge?type=warning&title=번호 입력 오류&message=${msg}&next=/search`);
             return;
         }
 
         setLoading(true);
         try {
-            // [DEBUG] API 엔드포인트 및 페이로드 확인
+            // Updated Endpoint matching CallCenterProxyController
             const res = await api.post('/callcenter/customer/candidates', { phone: rawPhone });
             
-            if (res.candidateCount > 0) {
-                const customer = res.candidates[0];
+            if (res.isExist) {
+                // Backend returns { isExist: true, memberId, maskedName, ... }
+                // We pass this entire object or specific fields to AuthPage
+                const customer = {
+                    maskedName: res.maskedName,
+                    maskedPhone: phone, // Pass formatted phone as maskedPhone for display
+                    customerRef: res.memberId // Map memberId to customerRef
+                };
                 navigate('/auth', { state: { customer } });
             } else {
-                alert('해당 번호로 가입된 고객을 찾을 수 없습니다.\n입력하신 번호: ' + phone);
+                const msg = encodeURIComponent(`해당 번호로 가입된 고객을 찾을 수 없습니다.\n입력하신 번호: ${phone}`);
+                navigate(`/bridge?type=info&title=조회 결과 없음&message=${msg}&next=/search`);
             }
         } catch (e) {
             console.error('Search Error:', e);
-            alert('조회 중 오류가 발생했습니다. 시스템 관리자에게 문의하세요.');
+            const msg = encodeURIComponent('조회 중 오류가 발생했습니다. 시스템 관리자에게 문의하세요.');
+            navigate(`/bridge?type=error&title=시스템 오류&message=${msg}&next=/search`);
         } finally {
             setLoading(false);
         }

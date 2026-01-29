@@ -33,23 +33,34 @@ public class IssuerClient {
     }
 
     public Map<String, Object> requestAuth(Map<String, String> request) {
+        // [Mapping] CallCenter (phone, callId) -> Trustee (clientData, authRequestId)
+        Map<String, String> trusteeRequest = new java.util.HashMap<>(request);
+        if (request.containsKey("phone")) {
+            trusteeRequest.put("clientData", request.get("phone"));
+        }
+        if (request.containsKey("callId")) {
+            trusteeRequest.put("authRequestId", request.get("callId"));
+        }
+
         return restClient.post()
-                .uri("/issuer/auth/request")
+                .uri("/api/v1/auth/init")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
+                .body(trusteeRequest)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
     }
 
     public Map<String, Object> verifyAuth(Map<String, String> request) {
-        return restClient.post()
-                .uri("/issuer/auth/verify")
+        restClient.patch() // Trustee uses PATCH for confirm
+                .uri("/api/v1/auth/confirm")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
+                .body(request) // {tokenId, otp} matches
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
+                .toBodilessEntity();
+        
+        // If successful (no exception), return success map
+        return Map.of("status", "COMPLETED", "message", "Authentication verified");
     }
 
     public Map<String, Object> reportLoss(Map<String, Object> request) {

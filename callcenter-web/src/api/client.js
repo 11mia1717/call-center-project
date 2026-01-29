@@ -35,8 +35,9 @@ class ApiClient {
             const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
             if (!response.ok) {
                 if (response.status === 401) {
-                    // Token expired logic could go here
-                    console.warn('Unauthorized');
+                    const msg = encodeURIComponent('세션이 만료되었습니다. 다시 로그인해 주세요.');
+                    window.location.href = `/bridge?type=warning&title=세션 만료&message=${msg}&next=/`;
+                    localStorage.clear();
                 }
                 throw new Error(`API Error: ${response.status}`);
             }

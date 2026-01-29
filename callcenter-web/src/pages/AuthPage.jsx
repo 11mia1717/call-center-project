@@ -27,9 +27,12 @@ export default function AuthPage() {
             });
             setAuthTxId(res.authTxId);
             setStep('VERIFY');
-            alert(`인증번호가 발송되었습니다!\n\n[개발용] 인증번호: ${res.devOtp || '확인불가'}\n(인증 트랜잭션 ID: ${res.authTxId})`);
+            // Informational bridge for dev OTP
+            const msg = encodeURIComponent(`인증번호가 발송되었습니다!\n\n[개발용] 인증번호: ${res.devOtp || '확인불가'}\n(인증 트랜잭션 ID: ${res.authTxId})`);
+            navigate(`/bridge?type=info&title=인증번호 발송&message=${msg}&next=/auth`, { state: { ...state, customer } });
         } catch (e) {
-            alert('인증번호 요청에 실패했습니다.');
+            const msg = encodeURIComponent('인증번호 요청에 실패했습니다. 입력 정보를 확인해 주세요.');
+            navigate(`/bridge?type=error&title=발송 실패&message=${msg}&next=/auth`, { state: { ...state, customer } });
         } finally {
             setLoading(false);
         }
@@ -44,12 +47,15 @@ export default function AuthPage() {
             });
 
             if (res.result === 'SUCCESS') {
-                navigate('/loss', { state: { customerRef: res.customerRef } });
+                const msg = encodeURIComponent('본인 인증이 성공적으로 완료되었습니다.\n상담 화면으로 이동합니다.');
+                navigate(`/bridge?type=success&title=인증 완료&message=${msg}&next=/loss`, { state: { customerRef: res.customerRef } });
             } else {
-                alert('인증 실패: ' + res.message);
+                const msg = encodeURIComponent('인증 실패: ' + res.message);
+                navigate(`/bridge?type=warning&title=인증 실패&message=${msg}&next=/auth`, { state: { ...state, customer } });
             }
         } catch (e) {
-            alert('인증 처리 중 오류가 발생했습니다.');
+            const msg = encodeURIComponent('인증 처리 중 오류가 발생했습니다.');
+            navigate(`/bridge?type=error&title=시스템 오류&message=${msg}&next=/auth`, { state: { ...state, customer } });
         } finally {
             setLoading(false);
         }

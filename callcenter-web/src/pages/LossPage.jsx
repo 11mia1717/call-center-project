@@ -45,11 +45,10 @@ export default function LossPage() {
 
     const handleLoss = async () => {
         if (selectedCardRefs.length === 0) {
-            alert('중지할 카드를 선택해 주세요.');
+            const msg = encodeURIComponent('중지할 카드를 선택해 주세요.');
+            navigate(`/bridge?type=warning&title=대상 미선택&message=${msg}&next=/loss`, { state: { customerRef } });
             return;
         }
-
-        if (!confirm(`선택한 ${selectedCardRefs.length}개의 카드를 정말로 분실 신고 하시겠습니까?`)) return;
 
         setLoading(true);
         try {
@@ -61,7 +60,8 @@ export default function LossPage() {
             setResult(res);
             setComplete(true);
         } catch (e) {
-            alert('신고 접수 중 오류가 발생했습니다.');
+            const msg = encodeURIComponent('신고 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            navigate(`/bridge?type=error&title=접수 실패&message=${msg}&next=/loss`, { state: { customerRef } });
         } finally {
             setLoading(false);
         }
