@@ -122,10 +122,12 @@ public class ComplianceService {
      * 이름 마스킹 (홍길동 -> 홍*동)
      */
     private String maskName(String name) {
-        if (name == null || name.length() < 2) return "***";
-        if (name.length() == 2) {
-            return name.charAt(0) + "*";
+        if (name == null || name.isBlank()) return "***";
+        String trimmed = name.trim();
+        if (trimmed.length() < 2) return trimmed + "*";
+        if (trimmed.length() == 2) {
+            return trimmed.charAt(0) + "*";
         }
-        return name.charAt(0) + "*".repeat(name.length() - 2) + name.charAt(name.length() - 1);
+        return trimmed.charAt(0) + "*".repeat(trimmed.length() - 2) + trimmed.charAt(trimmed.length() - 1);
     }
 }

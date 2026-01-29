@@ -51,108 +51,59 @@ export default function SearchPage() {
     };
 
     return (
-        <div className="page-container bg-gray-50 min-h-screen pb-20 font-sans">
+        <div className="page-container bg-white min-h-screen font-sans">
             {/* Header */}
-            <header className="page-header bg-white shadow-sm border-b py-4 sticky top-0 z-30">
-                <div className="max-w-3xl mx-auto px-6 flex justify-between items-center">
-                    <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate('/dashboard')}>
-                        <Logo className="h-6" />
-                        <div className="h-4 w-px bg-gray-200"></div>
-                        <h1 className="text-lg font-bold text-gray-800">인바운드 상담</h1>
+            <header className="page-header bg-white py-4 px-6 flex justify-center items-center relative">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#1A73E8] rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(26,115,232,0.3)]">
+                        <Infinity className="text-white" size={24} />
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1.5 bg-red-50 text-red-600 px-3 py-1.5 rounded-full border border-red-100 shadow-sm animate-pulse">
-                            <Mic size={16} />
-                            <span className="text-xs font-black tracking-tighter">LIVE RECORDING</span>
-                        </div>
-                        <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
-                            <LogOut size={20} />
-                        </button>
-                    </div>
+                    <span className="text-[20px] font-black tracking-tight text-[#1A1A1A]">
+                        Continue Card <span className="text-[#1A73E8]">콜센터</span>
+                    </span>
                 </div>
             </header>
 
-            <main className="max-w-3xl mx-auto p-6 space-y-8 animate-fade-in">
-                {/* Script Section */}
-                <section className="bg-blue-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-blue-200">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-4 bg-white/20 w-fit px-3 py-1 rounded-full backdrop-blur-md">
-                            <MessageSquare size={16} />
-                            <span className="text-xs font-bold uppercase tracking-widest">Opening Script</span>
-                        </div>
-                        <h2 className="text-2xl font-bold mb-2">안녕하십니까, Continue Bank 고객센터입니다.</h2>
-                        <p className="text-white text-sm leading-relaxed max-w-lg font-medium opacity-95">
-                            "무엇을 도와드릴까요? 본 상담은 개인정보보호법 및 금융소비자보호법에 따라 모든 통화 내용이 녹음되며, 조회 이력이 안전하게 보관됩니다."
-                        </p>
-                    </div>
-                    <Search size={140} className="absolute -bottom-8 -right-8 text-white/10 rotate-12" />
-                </section>
+            <main className="max-w-4xl mx-auto p-10 pt-4 animate-fade-in">
+                <div className="mb-10">
+                    <h1 className="text-[28px] font-black text-gray-900 mb-2 tracking-tight">고객 조회</h1>
+                    <p className="text-gray-500 font-bold text-[15px]">수신 전화번호(ANI)를 입력하여 가입 고객 정보를 확인하세요.</p>
+                </div>
 
-                <div className="bg-white rounded-32px p-10 border border-gray-100 shadow-custom">
-                    <div className="mb-8">
-                        <h3 className="text-xl font-black text-gray-900 mb-2">고객 정보 조회</h3>
-                        <p className="text-sm font-bold text-gray-400">수신된 전화번호(ANI) 또는 요청하신 번호를 입력하세요.</p>
-                    </div>
-
+                <div className="bg-white rounded-[32px] p-10 pt-8 border border-gray-100 shadow-[0_15px_60px_-15px_rgba(0,0,0,0.05)] mb-10">
                     <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Customer Phone Number</label>
+                        <div className="space-y-3">
+                            <label className="text-sm font-bold text-gray-400 pl-1">휴대폰 번호</label>
                             <input
-                                className="w-full px-6 py-5 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-blue-600 transition-all outline-none text-2xl font-black font-mono tracking-widest text-gray-900"
+                                className="w-full px-6 py-4 bg-white border-2 border-blue-100 rounded-2xl focus:border-blue-600 transition-all outline-none text-xl font-bold font-mono tracking-wider text-gray-800"
                                 value={phone}
                                 onChange={handlePhoneChange}
-                                placeholder="010-0000-0000"
+                                placeholder="01012345678"
                                 maxLength={13}
                             />
                         </div>
 
                         <button 
-                            className="w-full h-16 bg-blue-600 text-white rounded-2xl font-black text-lg shadow-lg shadow-blue-100 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                            className="w-full h-18 text-white rounded-[24px] font-black text-xl hover:brightness-110 transition-all flex items-center justify-center"
+                            style={{ backgroundColor: '#1A73E8', boxShadow: '0 8px 25px rgba(26,115,232,0.25)' }}
                             onClick={handleSearch} 
                             disabled={loading}
                         >
                             {loading ? (
                                 <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                             ) : (
-                                <>
-                                    <User size={20} />
-                                    <span>회원 정보 통합 조회</span>
-                                    <ChevronRight size={20} />
-                                </>
+                                <span>고객 찾기</span>
                             )}
                         </button>
                     </div>
                 </div>
 
-                {/* Compliance Info Section */}
-                <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 text-gray-900 mb-2">
-                        <ShieldCheck size={20} className="text-blue-600" />
-                        <h4 className="text-sm font-black uppercase tracking-widest">Compliance & Legal Notice</h4>
-                    </div>
-                    <ul className="space-y-3">
-                        <li className="flex gap-3 text-xs text-gray-500 leading-relaxed">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
-                            <p><strong>개인정보보호법 제15조</strong>에 의거, 상담 목적 외의 고객 정보 열람 및 오남용은 엄격히 금지되며 모든 접근 이력은 실시간으로 모니터링됩니다.</p>
-                        </li>
-                        <li className="flex gap-3 text-xs text-gray-500 leading-relaxed">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
-                            <p><strong>금융소비자보호법</strong> 등 관련 법령에 따라 모든 상담 내용은 서비스 품질 향상 및 분쟁 조절을 위해 최소 3년간 안전하게 보존됩니다.</p>
-                        </li>
-                        <li className="flex gap-3 text-xs text-gray-500 leading-relaxed">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
-                            <p>조회된 정보가 실제 고객 정보와 상이할 경우, 즉시 <strong>ARS 본인 재인증</strong> 절차를 거쳐야 하며 부정 사용 적발 시 관련 법에 따라 처벌받을 수 있습니다.</p>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="bg-gray-100/50 rounded-2xl p-6 border border-gray-100 text-[10px] text-gray-400 font-bold leading-relaxed flex gap-3 italic">
-                    <AlertCircle size={16} className="shrink-0" />
-                    <p>
-                        본 화면은 오퍼레이터 전용 보안 구역입니다. 화면 캡처 및 외부 매체로의 정보 유출은 보안 정책 위반에 해당합니다.
-                    </p>
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100/80 text-sm text-gray-400 font-bold leading-relaxed">
+                    ※ 조회된 고객이 없을 경우, 번호를 다시 확인하거나 신규 가입 안내를 진행하세요.
                 </div>
             </main>
         </div>
     );
 }
+
+import { Infinity } from 'lucide-react';

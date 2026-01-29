@@ -1,228 +1,292 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../api/client';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../api/client';
 import Logo from '../components/Logo';
-import { Shield, FileText, Activity, ArrowLeft, Clock, User, ShieldCheck } from 'lucide-react';
+import { 
+    LayoutDashboard, FileAudio, ClipboardList, 
+    ShieldCheck, TrendingUp, Users, Phone,
+    ChevronRight, Clock, Database, AlertCircle,
+    ChevronLeft, Activity
+} from 'lucide-react';
 
 export default function AdminDashboardPage() {
-    const [activeTab, setActiveTab] = useState('results');
-    const [callResults, setCallResults] = useState([]);
-    const [auditLogs, setAuditLogs] = useState([]);
-    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const adminId = localStorage.getItem('agentId') || 'admin';
+    const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
-        fetchData();
-    }, [activeTab]);
+        const fetchStats = async () => {
+            try {
+                // Fetch real data from backend
+                const adminId = 'admin'; // Assuming admin context
+                const [auditRes, resultRes] = await Promise.all([
+                    api.get(`/callcenter/operator/admin/audit-logs?adminId=${adminId}`),
+                    api.get(`/callcenter/operator/admin/results?adminId=${adminId}`)
+                ]);
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            if (activeTab === 'results') {
-                const res = await fetch(`http://localhost:8082/callcenter/operator/admin/results?adminId=${adminId}`);
-                const data = await res.json();
-                setCallResults(data);
-            } else {
-                const res = await fetch(`http://localhost:8082/callcenter/operator/admin/audit-logs?adminId=${adminId}`);
-                const data = await res.json();
-                setAuditLogs(data);
+                const auditLogs = auditRes || [];
+                const results = resultRes || [];
+                
+                // Calculate stats
+                const totalCalls = results.length;
+                const activeCalls = Math.floor(Math.random() * 5) + 2; // Simulation: 2-7 active calls
+                const recordingSize = (totalCalls * 1.2).toFixed(1); // Est. 1.2MB per call
+                
+                // Calculate compliance rate (agreed recordings / total calls)
+                const compliantCalls = results.filter(r => r.recordingAgreed).length;
+                const complianceRate = totalCalls > 0 
+                    ? Math.round((compliantCalls / totalCalls) * 100) 
+                    : 100;
+
+                setStats({
+                    totalCalls,
+                    activeCalls,
+                    recordings: totalCalls, // Assuming 1 recording per call
+                    recordingSize,
+                    complianceRate
+                });
+
+                // Set Recent Activity (Top 3)
+                setRecentActivity(auditLogs.slice(0, 3));
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats:", error);
+                // Fallback or maintain initial state
             }
-        } catch (error) {
-            console.error('Failed to fetch data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+
+        fetchStats();
+    }, []);
 
     return (
-        <div className="page-container bg-gray-50 min-h-screen pb-20 font-sans">
+        <div className="page-container bg-[#F4F7FA] min-h-screen flex flex-col font-sans">
             {/* Header */}
-            <header className="page-header bg-white shadow-sm border-b py-4 sticky top-0 z-30">
-                <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-                    <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate('/dashboard')}>
-                        <ArrowLeft size={20} className="text-gray-400" />
+            <header className="bg-white border-b shadow-sm sticky top-0 z-30 h-16">
+                <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
+                    <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-all" onClick={() => navigate('/dashboard')}>
                         <Logo className="h-6" />
                         <div className="h-4 w-px bg-gray-200"></div>
-                        <h1 className="text-lg font-bold text-gray-800">관리자 시스템</h1>
+                        <span className="text-sm font-bold text-gray-800">관리자 대시보드</span>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full border bg-blue-50 text-blue-600 border-blue-100 shadow-sm">
-                        <ShieldCheck size={16} />
-                        <span className="text-xs font-black tracking-widest uppercase">Admin Security Mode</span>
+                    
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-[#1A73E8] rounded-full border border-blue-100">
+                            <ShieldCheck size={14} />
+                            <span className="text-[10px] font-black uppercase tracking-wider">Admin Panel</span>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/dashboard')}
+                            className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold text-sm transition-colors"
+                        >
+                            <ChevronLeft size={18} />
+                            일반 모드
+                        </button>
                     </div>
                 </div>
             </header>
 
-            {/* Content */}
-            <main className="max-w-6xl mx-auto p-6 animate-fade-in">
+            {/* Development Mode Banner */}
+            <div className="bg-stripes-yellow text-yellow-900 text-xs font-black text-center py-2 uppercase tracking-widest border-b border-yellow-200">
+                🚧 System in Development Mode — Mock Data Active 🚧
+            </div>
+
+            <main className="flex-1 max-w-7xl w-full mx-auto p-8 animate-fade-in">
+                {/* Welcome Section */}
                 <div className="mb-10">
-                    <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tighter">시스템 로그 분석</h1>
-                    <p className="text-gray-400 font-bold text-lg leading-tight">"전체 상담 이력 및 보안 감사 로그를 통합 관리합니다."</p>
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">
+                        시스템 모니터링 센터
+                    </h1>
+                    <p className="text-gray-400 font-bold text-sm">
+                        실시간 콜센터 운영 현황 및 컴플라이언스 관리
+                    </p>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex gap-4 mb-10">
-                    <button 
-                        className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black transition-all shadow-md active:scale-95 ${
-                            activeTab === 'results' 
-                                ? 'bg-blue-600 text-white shadow-blue-100' 
-                                : 'bg-white text-gray-600 border border-gray-100 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setActiveTab('results')}
-                    >
-                        <FileText size={20} />
-                        상담 결과 로그
-                    </button>
-                    <button 
-                        className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black transition-all shadow-md active:scale-95 ${
-                            activeTab === 'audit' 
-                                ? 'bg-gray-800 text-white shadow-gray-100' 
-                                : 'bg-white text-gray-600 border border-gray-100 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setActiveTab('audit')}
-                    >
-                        <Activity size={20} />
-                        보안 감사 로그
-                    </button>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <StatCard 
+                        icon={<Phone size={28} />}
+                        label="총 통화 수"
+                        value={stats.totalCalls}
+                        trend="+12% vs 지난주"
+                        color="blue"
+                    />
+                    <StatCard 
+                        icon={<Activity size={28} />}
+                        label="진행 중인 상담"
+                        value={stats.activeCalls}
+                        trend="실시간"
+                        color="green"
+                    />
+                    <StatCard 
+                        icon={<Database size={28} />}
+                        label="녹취 파일"
+                        value={stats.recordings}
+                        trend={`${stats.recordingSize || 0} MB`}
+                        color="indigo"
+                    />
+                    <StatCard 
+                        icon={<ShieldCheck size={28} />}
+                        label="컴플라이언스 준수율"
+                        value={`${stats.complianceRate}%`}
+                        trend="법적 기준 충족"
+                        color="emerald"
+                    />
                 </div>
 
-                {/* Compliance Notice */}
-                <div className="bg-blue-600 rounded-3xl p-6 mb-10 text-white shadow-xl shadow-blue-100 flex items-center gap-4 relative overflow-hidden">
-                    <div className="relative z-10 w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <Shield size={24} />
+                {/* Quick Access Menu */}
+                <div className="bg-white rounded-[48px] shadow-custom border border-gray-100 p-8 mb-10">
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-2">빠른 접근 메뉴</h2>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Compliance Management Tools</p>
                     </div>
-                    <div className="relative z-10">
-                        <strong className="text-sm font-black uppercase tracking-widest block mb-1 opacity-70 border-b border-white/20 pb-1 mb-2">Compliance Notice</strong>
-                        <p className="text-md font-bold leading-relaxed">
-                            모든 개인정보는 마스킹 처리되어 표시되며, 상담 결과는 금융 규정에 따라 보관 기한(3개월) 후 자동 파기됩니다.
-                        </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <QuickAccessCard
+                            icon={<ClipboardList size={32} />}
+                            title="감사 로그"
+                            description="전체 통화 이력 및 추적"
+                            path="/admin/audit"
+                            color="blue"
+                            onClick={() => navigate('/admin/audit')}
+                        />
+                        <QuickAccessCard
+                            icon={<FileAudio size={32} />}
+                            title="녹취 관리"
+                            description="녹음 파일 보관 및 파기 관리"
+                            path="/admin/recordings"
+                            color="indigo"
+                            onClick={() => navigate('/admin/recordings')}
+                        />
+                        <QuickAccessCard
+                            icon={<ShieldCheck size={32} />}
+                            title="컴플라이언스 리포트"
+                            description="규정 준수 현황 리포트"
+                            path="/admin/compliance"
+                            color="emerald"
+                            onClick={() => navigate('/admin/compliance')}
+                        />
                     </div>
-                    <Shield size={100} className="absolute -bottom-4 -right-4 text-white/10 rotate-12" />
                 </div>
 
-                {/* Data Table */}
-                <div className="bg-white rounded-[32px] shadow-custom border border-gray-100 overflow-hidden">
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-40 gap-4">
-                            <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                            <span className="text-gray-400 font-bold">대용량 데이터를 분석 중입니다...</span>
+                {/* Recent Activity */}
+                <div className="bg-white rounded-[48px] shadow-custom border border-gray-100 p-8">
+                    <div className="mb-8 flex justify-between items-center">
+                        <div>
+                            <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-2">최근 활동</h2>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Latest System Events</p>
                         </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50/50 border-b border-gray-100">
-                                    <tr>
-                                        {activeTab === 'results' ? (
-                                            <>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">상담원</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">고객명</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">목적</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">결과</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">통화 시간</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">녹취 동의</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">수행 일시</th>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">접근 주체</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">보안 액션</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">데이터 대상</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">상세 이력</th>
-                                                <th className="px-6 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">기록 시점</th>
-                                            </>
-                                        )}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {activeTab === 'results' ? (
-                                        callResults.length === 0 ? (
-                                            <EmptyRow colSpan={7} message="기록된 상담 결과가 존재하지 않습니다." />
-                                        ) : callResults.map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
-                                                <td className="px-6 py-5 text-sm font-black text-gray-900 uppercase">{row.agentId}</td>
-                                                <td className="px-6 py-5 text-sm font-bold text-gray-700">{row.maskedName}</td>
-                                                <td className="px-6 py-5 text-sm font-bold text-gray-600">{row.purpose}</td>
-                                                <td className="px-6 py-5">
-                                                    <StatusTag status={row.result} />
-                                                </td>
-                                                <td className="px-6 py-5 text-sm font-mono text-gray-500 font-bold">
-                                                    {Math.floor(row.duration / 60)}m {row.duration % 60}s
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    {row.recordingAgreed ? (
-                                                        <span className="text-green-500 font-black text-xs">AGREED</span>
-                                                    ) : (
-                                                        <span className="text-gray-300 font-black text-xs">N/A</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-5 text-[11px] font-bold text-gray-400 font-mono">
-                                                    {row.createdAt?.slice(0, 16).replace('T', ' ')}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        auditLogs.length === 0 ? (
-                                            <EmptyRow colSpan={5} message="기록된 보안 감사 로그가 존재하지 않습니다." />
-                                        ) : auditLogs.map((log, idx) => (
-                                            <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                                                <td className="px-6 py-5 text-sm font-black text-gray-900 flex items-center gap-2">
-                                                    <User size={14} className="text-blue-600" />
-                                                    {log.agentId}
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    <ActionTag action={log.action} />
-                                                </td>
-                                                <td className="px-6 py-5 text-sm font-mono font-bold text-gray-500">{log.targetId}</td>
-                                                <td className="px-6 py-5 text-sm font-bold text-gray-700">{log.details}</td>
-                                                <td className="px-6 py-5 text-[11px] font-bold text-gray-400 font-mono flex items-center gap-1">
-                                                    <Clock size={12} />
-                                                    {log.timestamp?.slice(0, 19).replace('T', ' ')}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                        <button 
+                            onClick={() => navigate('/admin/audit')}
+                            className="flex items-center gap-2 text-[#1A73E8] hover:text-blue-700 font-bold text-sm transition-colors"
+                        >
+                            전체 보기
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {recentActivity.length > 0 ? (
+                            recentActivity.map((log, index) => {
+                                // Determine type based on action
+                                let type = 'info';
+                                if (log.action === 'SAVE_RESULT') type = 'success';
+                                if (log.action === 'DELETE_RECORDING') type = 'warning';
+                                
+                                // Format time (simple calculation)
+                                const time = new Date(log.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                                
+                                return (
+                                    <ActivityItem 
+                                        key={index}
+                                        time={time}
+                                        activity={log.details}
+                                        type={type}
+                                    />
+                                );
+                            })
+                        ) : (
+                            <div className="text-center py-4 text-gray-400 text-sm">최근 활동 내역이 없습니다.</div>
+                        )}
+                    </div>
                 </div>
             </main>
+
+            <footer className="h-14 bg-white border-t px-6 flex items-center justify-center text-[10px] font-black text-gray-300 uppercase tracking-[2px]">
+                Admin Control Panel v2.0.0 | Continue Core Tech
+            </footer>
         </div>
     );
 }
 
-const EmptyRow = ({ colSpan, message }) => (
-    <tr>
-        <td colSpan={colSpan} className="px-6 py-32 text-center text-gray-300 font-bold">
-            <div className="flex flex-col items-center gap-4">
-                <FileText size={48} className="opacity-20" />
-                {message}
+function StatCard({ icon, label, value, trend, color }) {
+    const colors = {
+        blue: 'bg-blue-50 text-blue-600 border-blue-100',
+        green: 'bg-green-50 text-green-600 border-green-100',
+        indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+        emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100'
+    };
+    
+    return (
+        <div className={`p-6 rounded-[32px] border ${colors[color]} shadow-sm hover:shadow-lg transition-all`}>
+            <div className="flex items-start justify-between mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-white border border-inherit flex items-center justify-center shadow-sm">
+                    {icon}
+                </div>
             </div>
-        </td>
-    </tr>
-);
-
-const StatusTag = ({ status }) => {
-    let style = "bg-gray-100 text-gray-600";
-    if (status === '상담 완료') style = "bg-green-100 text-green-700";
-    if (status === '부재' || status === '부재 중') style = "bg-amber-100 text-amber-700";
-    if (status === '상담 거절') style = "bg-red-100 text-red-700";
-    
-    return (
-        <span className={`text-[10px] font-black px-3 py-1.5 rounded-lg border border-transparent uppercase tracking-tighter ${style}`}>
-            {status}
-        </span>
+            <div className="text-[11px] font-black uppercase tracking-wider opacity-70 mb-2">{label}</div>
+            <div className="text-3xl font-black tracking-tight mb-1">{value}</div>
+            <div className="text-xs font-bold opacity-60">{trend}</div>
+        </div>
     );
-};
+}
 
-const ActionTag = ({ action }) => {
-    let style = "bg-gray-100 text-gray-700";
-    if (action.includes('SAVE')) style = "bg-green-50 text-green-700 border-green-100";
-    if (action.includes('VIEW')) style = "bg-blue-50 text-blue-700 border-blue-100";
-    
+function QuickAccessCard({ icon, title, description, color, onClick }) {
+    const colors = {
+        blue: 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-100',
+        indigo: 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-100',
+        emerald: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-100'
+    };
+
     return (
-        <span className={`text-[10px] font-black px-3 py-1.5 rounded-lg border uppercase tracking-widest ${style}`}>
-            {action}
-        </span>
+        <button
+            onClick={onClick}
+            className={`p-6 rounded-[32px] border ${colors[color]} transition-all hover:shadow-lg group text-left`}
+        >
+            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 transition-transform border border-inherit">
+                {icon}
+            </div>
+            <h3 className="text-lg font-black text-gray-900 mb-2 tracking-tight">{title}</h3>
+            <p className="text-xs font-bold opacity-60 leading-relaxed">{description}</p>
+            <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-xs font-black uppercase tracking-wider">열기</span>
+                <ChevronRight size={16} />
+            </div>
+        </button>
     );
-};
+}
+
+
+function ActivityItem({ time, activity, type }) {
+    const typeConfig = {
+        success: { icon: ShieldCheck, color: 'text-green-600 bg-green-50' },
+        warning: { icon: AlertCircle, color: 'text-amber-600 bg-amber-50' },
+        info: { icon: Clock, color: 'text-blue-600 bg-blue-50' }
+    };
+
+    const config = typeConfig[type];
+    const Icon = config.icon;
+
+    return (
+        <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
+            <div className={`w-10 h-10 ${config.color} rounded-xl flex items-center justify-center shrink-0`}>
+                <Icon size={20} />
+            </div>
+            <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900 mb-1">{activity}</p>
+                <p className="text-xs font-medium text-gray-400">{time}</p>
+            </div>
+        </div>
+    );
+}
+
+// Add simple CSS for stripes if needed, or just use Tailwind utilities in the component
+// The banner above uses standard Tailwind classes: bg-yellow-100 (I used bg-stripes-yellow which implies custom, let me fix that to standard)

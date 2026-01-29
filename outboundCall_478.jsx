@@ -54,7 +54,6 @@ const OutboundCallPage = () => {
             return;
         }
         try {
-            // 1. Backend API Call (Simulated for log)
             await api.post('/callcenter/outbound/log', {
                 targetName: target.name,
                 result: result,
@@ -62,73 +61,12 @@ const OutboundCallPage = () => {
                 recordingAgreed: recordingAgreed,
                 purpose: target.purpose
             });
-
-            // 2. Generate Compliance Recording File (Simulation)
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            const hh = String(today.getHours()).padStart(2, '0');
-            const min = String(today.getMinutes()).padStart(2, '0');
-            const ss = String(today.getSeconds()).padStart(2, '0');
-            
-            const agentId = localStorage.getItem('agentId') || 'AGT001';
-            const customerPhone = target.phone.replace(/-/g, '').slice(-4); // Last 4 digits for privacy in filename
-            
-            // Format: REC_{YYYYMMDD}_{HHMMSS}_{AGENT_ID}_{CUST_LAST4}_{TYPE}.mp3
-            const filename = `REC_${yyyy}${mm}${dd}_${hh}${min}${ss}_${agentId}_${customerPhone}_OUT.mp3`;
-            const fileSize = (duration * 0.02 + 0.5).toFixed(1) + 'MB'; // Approx size calculation
-
-            const newRecording = {
-                id: `REC-${Date.now()}`,
-                fileName: filename,
-                customerName: target.name,
-                customerPhone: target.phone,
-                timestamp: today.toISOString(),
-                duration: formatTime(duration),
-                size: fileSize,
-                agentId: agentId,
-                type: 'OUTBOUND',
-                agreed: recordingAgreed
-            };
-
-            // 3. Save to LocalStorage (Simulating Database/File Server)
-            const savedRecordings = JSON.parse(localStorage.getItem('saved_recordings') || '[]');
-            savedRecordings.unshift(newRecording);
-            localStorage.setItem('saved_recordings', JSON.stringify(savedRecordings));
-
-            // 4. Create Audit Log Entry
-            const auditLog = {
-                id: `AUDIT-${yyyy}${mm}${dd}-${Date.now().toString().slice(-6)}`,
-                timestamp: today.toISOString(),
-                type: 'OUTBOUND',
-                agentId: agentId,
-                customerName: target.name,
-                customerPhone: target.phone,
-                result: result,
-                recordingAgreed: recordingAgreed,
-                duration: formatTime(duration),
-                action: 'Call Completed & Result Saved'
-            };
-            const auditLogs = JSON.parse(localStorage.getItem('audit_logs') || '[]');
-            auditLogs.unshift(auditLog);
-            localStorage.setItem('audit_logs', JSON.stringify(auditLogs));
             
             // Compliance: Customer Notice Simulation
             console.log(`[COMPLIANCE] SMS Sent to ${target.name}: 상담이 완료되었습니다. 정보는 3개월 후 자동 파기됩니다.`);
             
-            // Check if user is admin to decide navigation
-            const role = localStorage.getItem('agentRole');
-            if (role === 'ADMIN') {
-                if (window.confirm('상담이 완료되었습니다. 녹취 파일 관리 페이지로 이동하시겠습니까?')) {
-                    navigate('/admin/recordings');
-                    return;
-                }
-            }
-
             navigate('/outbound');
         } catch (e) {
-            console.error(e);
             alert('결과 저장 중 오류가 발생했습니다.');
         }
     };

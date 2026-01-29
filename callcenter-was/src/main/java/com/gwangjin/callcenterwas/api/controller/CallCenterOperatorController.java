@@ -1,6 +1,8 @@
 package com.gwangjin.callcenterwas.api.controller;
 
 import com.gwangjin.callcenterwas.common.session.SessionManager;
+import com.gwangjin.callcenterwas.domain.entity.Agent;
+import com.gwangjin.callcenterwas.domain.repository.AgentRepository;
 import com.gwangjin.callcenterwas.domain.service.ComplianceService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CallCenterOperatorController {
 
-    private final com.gwangjin.callcenterwas.domain.repository.AgentRepository agentRepository;
-    private final com.gwangjin.callcenterwas.common.session.SessionManager sessionManager;
+    private final AgentRepository agentRepository;
+    private final SessionManager sessionManager;
     private final ComplianceService complianceService;
 
     @PostMapping("/login")
@@ -24,7 +26,7 @@ public class CallCenterOperatorController {
         String password = loginData.get("password");
 
         // DB Verification
-        com.gwangjin.callcenterwas.domain.entity.Agent agent = agentRepository.findByAgentIdAndPassword(agentId, password)
+        Agent agent = agentRepository.findByAgentIdAndPassword(agentId, password)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
         String token = sessionManager.createSession(agent.getAgentId());

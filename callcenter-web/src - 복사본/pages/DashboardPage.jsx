@@ -6,35 +6,26 @@ import { PhoneIncoming, PhoneOutgoing, Shield, LogOut, LayoutDashboard, ShieldCh
 
 export default function DashboardPage() {
     const [loading, setLoading] = useState(false);
-    const [role, setRole] = useState(localStorage.getItem('agentRole') || 'AGENT');
-    const [incomingCall, setIncomingCall] = useState(false);
-    const [customer, setCustomer] = useState(null);
+    const [role, setRole] = useState('AGENT');
     const navigate = useNavigate();
+    const [incomingCall, setIncomingCall] = useState(null);
 
-    const handleInbound = () => {
-        setIncomingCall(true);
-        setCustomer({
-            name: '홍길동',
-            phone: '01012345678'
-        });
-    };
+    useEffect(() => {
+        const storedRole = localStorage.getItem('agentRole');
+        if (storedRole) {
+            setRole(storedRole);
+        }
+    }, []);
 
-    const maskName = (name) => {
-        if (!name) return 'Unknown';
-        if (name.length <= 2) return name[0] + '*';
-        return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
-    };
-
-    const maskPhone = (phone) => {
-        return '010-****-0000';
-    };
-
-    const handleOutbound = () => {
-        navigate('/outbound');
-    };
-
-    const handleAdmin = () => {
-        navigate('/admin');
+    const handleInbound = async () => {
+        setLoading(true);
+        setTimeout(() => {
+            setIncomingCall({ 
+                phone: '010-0000-0000',
+                displayPhone: '010-0000-0000'
+            });
+            setLoading(false);
+        }, 800);
     };
 
     const acceptCall = async () => {
@@ -55,6 +46,14 @@ export default function DashboardPage() {
         }
     };
 
+    const handleOutbound = () => {
+        navigate('/outbound');
+    };
+
+    const handleAdmin = () => {
+        navigate('/admin');
+    };
+
     const handleLogout = async () => {
         try {
             await api.post('/callcenter/operator/logout');
@@ -69,9 +68,116 @@ export default function DashboardPage() {
         }
     };
 
-    return (
-        <div className="page-container bg-gray-50 min-h-screen flex flex-col font-sans relative overflow-hidden">
+    if (incomingCall) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 font-sans select-none">
+                {/* 인입 알림 전용 고도화된 카드 레이아웃 */}
+                <div className="w-full max-w-2xl bg-white rounded-[48px] shadow-custom border border-gray-100 overflow-hidden animate-slide-up flex flex-col">
+                    
+                    {/* 카드 내부 헤더: 브랜드 및 세션 정보 */}
+                    <div className="p-10 pb-6 border-b border-gray-50 flex flex-col items-center text-center">
+                        <div className="mb-6">
+                            <Logo className="h-7" />
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full border border-blue-100 shadow-sm animate-pulse">
+                            <ShieldCheck size={14} />
+                            <span className="text-[10px] font-black tracking-[2px] uppercase">Live Incoming Session</span>
+                        </div>
+                    </div>
 
+                    {/* 카드 메인 컨텐츠: 애니메이션 및 인입 정보 */}
+                    <div className="px-10 py-16 flex flex-col items-center bg-gradient-to-b from-white to-gray-50/30">
+                        <div className="relative mb-16">
+                            <div className="ringing-animation-center">
+                                <div className="ringing-dot-center">
+                                    <PhoneIncoming size={56} strokeWidth={2.5} className="text-white" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="text-center space-y-4 mb-10">
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tighter leading-tight">
+                                고객님으로부터<br/>
+                                상담 요청이 도착했습니다
+                            </h2>
+                            <p className="text-gray-400 font-bold text-sm uppercase tracking-widest italic">Inbound Call Connection Wait</p>
+                        </div>
+                        
+                        <div className="w-full max-w-sm py-8 bg-white rounded-3xl border border-gray-100 shadow-xl flex flex-col items-center gap-2">
+                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-[3px]">Caller Identity</span>
+                            <span className="text-4xl font-mono font-black text-blue-700 tracking-tighter">
+                                {incomingCall.displayPhone}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* 카드 하단 액션: 수락 버튼 */}
+                    <div className="p-10 pt-6">
+                        <button 
+                            onClick={acceptCall}
+                            disabled={loading}
+                            className="w-full h-20 rounded-3xl bg-blue-600 text-white font-black text-2xl transition-all flex items-center justify-center gap-4 hover:bg-blue-700 active:scale-[0.98] shadow-2xl shadow-blue-100 group"
+                        >
+                            {loading ? (
+                                <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    <PhoneIncoming size={32} strokeWidth={3} className="group-hover:animate-bounce" />
+                                    <span>상담 수락하기</span>
+                                    <ChevronRight size={24} />
+                                </>
+                            )}
+                        </button>
+                        <p className="text-center mt-6 text-xs font-bold text-gray-400 tracking-tight leading-relaxed">
+                            수락 버튼을 누르시면 즉시 상담원 화면으로 연결됩니다.<br/>
+                            본 통화는 녹취 및 규정에 따라 안전하게 기록됩니다.
+                        </p>
+                    </div>
+                </div>
+
+                <style dangerouslySetInnerHTML={{ __html: `
+                    .ringing-animation-center {
+                        position: relative;
+                        width: 120px;
+                        height: 120px;
+                    }
+                    .ringing-dot-center {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background: #1A73E8;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 2;
+                        box-shadow: 0 10px 40px rgba(26, 115, 232, 0.3);
+                    }
+                    .ringing-animation-center::before,
+                    .ringing-animation-center::after {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        border-radius: 50%;
+                        background: #1A73E8;
+                        opacity: 0.3;
+                        animation: ring-center 2s infinite;
+                        z-index: 1;
+                    }
+                    .ringing-animation-center::after {
+                        animation-delay: 1s;
+                    }
+                    @keyframes ring-center {
+                        0% { transform: scale(1); opacity: 0.5; }
+                        100% { transform: scale(2.2); opacity: 0; }
+                    }
+                ` }} />
+            </div>
+        );
+    }
+
+    return (
+        <div className="page-container bg-gray-50 min-h-screen flex flex-col font-sans">
             {/* Navigation Bar */}
             <header className="page-header bg-white border-b shadow-sm sticky top-0 z-30 h-16">
                 <div className="max-w-6xl mx-auto px-6 h-full flex justify-between items-center">
@@ -172,97 +278,9 @@ export default function DashboardPage() {
                 </div>
             </main>
 
-            {incomingCall && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-md animate-fade-in">
-                    <div className="w-full max-w-[420px] bg-white rounded-[48px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] border border-white overflow-hidden animate-slide-up flex flex-col relative">
-                        <div className="h-2 bg-[#1A73E8]"></div>
-                        
-                        <div className="pt-12 pb-6 flex flex-col items-center">
-                            <Logo className="h-6 mb-6" />
-                            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-[#1A73E8] rounded-full border border-blue-100 shadow-sm">
-                                <ShieldCheck size={12} />
-                                <span className="text-[9px] font-black tracking-widest uppercase">Secured Inbound Channel</span>
-                            </div>
-                        </div>
-
-                        <div className="px-10 py-10 flex flex-col items-center">
-                            <div className="relative mb-12">
-                                <div className="ringing-bg">
-                                    <div className="ringing-dot flex items-center justify-center">
-                                        <PhoneIncoming size={52} strokeWidth={2.5} className="text-white" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="text-center space-y-3 mb-10">
-                                <h2 className="text-[32px] font-black text-gray-900 tracking-tighter leading-tight">
-                                    상담 요청 도착
-                                </h2>
-                                <p className="text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em]">Live Authentication Required</p>
-                            </div>
-                            
-                            <div className="w-full p-8 bg-gray-50 rounded-[40px] border border-gray-100 flex flex-col items-center gap-4 mb-8 shadow-sm">
-                                {customer && (
-                                    <div className="text-center">
-                                        <span className="text-[10px] font-black text-[#1A73E8] bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest block mb-3 w-fit mx-auto border border-blue-100">Continue Bank 회원</span>
-                                        <div className="text-3xl font-black text-gray-900 mb-1 tracking-tight">
-                                            {maskName(customer.name)} <span className="text-gray-300 text-lg ml-1 font-bold">고객님</span>
-                                        </div>
-                                        <div className="text-xl font-mono font-black text-[#1A73E8] tracking-widest">
-                                            {maskPhone(customer.phone)}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <button 
-                                onClick={acceptCall}
-                                disabled={loading}
-                                className="w-full h-20 rounded-[36px] text-white font-black text-2xl transition-all flex items-center justify-center gap-4 hover:brightness-110 active:scale-[0.96] group"
-                                style={{ backgroundColor: '#1A73E8', boxShadow: '0 20px 50px rgba(26,115,232,0.3)' }}
-                            >
-                                <PhoneIncoming size={28} strokeWidth={3} className="group-hover:animate-bounce" />
-                                <span>상담 수락</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <style dangerouslySetInnerHTML={{ __html: `
-                        .ringing-bg {
-                            position: relative;
-                            width: 100px;
-                            height: 100px;
-                        }
-                        .ringing-dot {
-                            position: absolute;
-                            width: 100%;
-                            height: 100%;
-                            background: #1A73E8;
-                            border-radius: 50%;
-                            z-index: 2;
-                            box-shadow: 0 15px 45px rgba(26, 115, 232, 0.4);
-                        }
-                        .ringing-bg::before,
-                        .ringing-bg::after {
-                            content: '';
-                            position: absolute;
-                            top: 0; left: 0; right: 0; bottom: 0;
-                            border-radius: 50%;
-                            background: #1A73E8;
-                            opacity: 0.3;
-                            animation: ring-ripple 2.5s infinite ease-out;
-                            z-index: 1;
-                        }
-                        .ringing-bg::after {
-                            animation-delay: 1.2s;
-                        }
-                        @keyframes ring-ripple {
-                            0% { transform: scale(1); opacity: 0.6; }
-                            100% { transform: scale(2.2); opacity: 0; }
-                        }
-                    ` }} />
-                </div>
-            )}
+            <footer className="h-14 bg-white border-t px-6 flex items-center justify-center text-[10px] font-black text-gray-300 uppercase tracking-[2px]">
+                Agent Support Portal v1.0.5 | Copyright © 2026 DAVADA
+            </footer>
         </div>
     );
 }
