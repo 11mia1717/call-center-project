@@ -13,36 +13,23 @@ export default function AdminDashboardPage() {
     const navigate = useNavigate();
     const [recentActivity, setRecentActivity] = useState([]);
 
-    const [stats, setStats] = useState({
-        totalCalls: 0,
-        activeCalls: 0,
-        recordings: 0,
-        recordingSize: "0.0",
-        complianceRate: 100
-    });
-
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 // Fetch real data from backend
-                const adminId = 'admin'; 
+                const adminId = 'admin'; // Assuming admin context
                 const [auditRes, resultRes] = await Promise.all([
                     api.get(`/callcenter/operator/admin/audit-logs?adminId=${adminId}`),
                     api.get(`/callcenter/operator/admin/results?adminId=${adminId}`)
                 ]);
 
-                // Ensure arrays even if API returns null/undefined
-                const auditLogs = Array.isArray(auditRes) ? auditRes : [];
-                const results = Array.isArray(resultRes) ? resultRes : [];
+                const auditLogs = auditRes || [];
+                const results = resultRes || [];
                 
-                // Calculate stats based on real data
+                // Calculate stats
                 const totalCalls = results.length;
-                
-                // Simulate active calls for visual liveliness (since we don't have real-time socket yet)
-                const activeCalls = Math.floor(Math.random() * 5) + 2; 
-                
-                // Estimate recording size (approx 1.2MB per call)
-                const recordingSize = (totalCalls * 1.2).toFixed(1); 
+                const activeCalls = Math.floor(Math.random() * 5) + 2; // Simulation: 2-7 active calls
+                const recordingSize = (totalCalls * 1.2).toFixed(1); // Est. 1.2MB per call
                 
                 // Calculate compliance rate (agreed recordings / total calls)
                 const compliantCalls = results.filter(r => r.recordingAgreed).length;
@@ -53,16 +40,17 @@ export default function AdminDashboardPage() {
                 setStats({
                     totalCalls,
                     activeCalls,
-                    recordings: totalCalls,
+                    recordings: totalCalls, // Assuming 1 recording per call
                     recordingSize,
                     complianceRate
                 });
 
-                // Set Recent Activity (Top 5)
-                setRecentActivity(auditLogs.slice(0, 5));
+                // Set Recent Activity (Top 3)
+                setRecentActivity(auditLogs.slice(0, 3));
 
             } catch (error) {
                 console.error("Failed to fetch dashboard stats:", error);
+                // Fallback or maintain initial state
             }
         };
 
@@ -96,7 +84,10 @@ export default function AdminDashboardPage() {
                 </div>
             </header>
 
-
+            {/* Development Mode Banner */}
+            <div className="bg-stripes-yellow text-yellow-900 text-xs font-black text-center py-2 uppercase tracking-widest border-b border-yellow-200">
+                🚧 System in Development Mode — Mock Data Active 🚧
+            </div>
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-8 animate-fade-in">
                 {/* Welcome Section */}

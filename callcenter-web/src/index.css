@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
 :root {
   --primary: #1A73E8;
   --primary-gradient: linear-gradient(135deg, #1A73E8 0%, #1557B0 100%);
@@ -11,9 +14,6 @@
   --shadow: 0 10px 25px rgba(26, 115, 232, 0.1);
   --font-family: 'Outfit', 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 * {
   margin: 0;

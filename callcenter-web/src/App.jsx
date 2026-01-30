@@ -12,6 +12,7 @@ import AuditLogPage from './pages/AuditLogPage';
 import ComplianceReportPage from './pages/ComplianceReportPage';
 import RecordingListPage from './pages/RecordingListPage';
 import InboundCallPage from './pages/InboundCallPage';
+import ConsultationHistoryPage from './pages/ConsultationHistoryPage';
 
 import StatusBridge from './pages/StatusBridge';
 import SessionMonitor from './components/SessionMonitor';
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/outbound" element={<PrivateRoute><OutboundPage /></PrivateRoute>} />
           <Route path="/outbound/call" element={<PrivateRoute><OutboundCallPage /></PrivateRoute>} />
           <Route path="/inbound" element={<PrivateRoute><InboundCallPage /></PrivateRoute>} />
+          <Route path="/history" element={<PrivateRoute><ConsultationHistoryPage /></PrivateRoute>} />
           <Route path="/bridge" element={<StatusBridge />} />
           
           {/* Admin Routes */}

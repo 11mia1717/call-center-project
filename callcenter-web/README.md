@@ -1,16 +1,24 @@
-# React + Vite
+# 프론트엔드 (React + Vite) - 다바다 콜센터
+> "상담 업무를 지원하는 전문 업무 포털"
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+이 프로젝트는 Vite를 기반으로 구축된 DAVADA 콜센터 상담원 전용 업무 포털입니다.
 
-Currently, two official plugins are available:
+## 🛠 주요 기술 스택
+- **프레임워크**: React 18
+- **빌드 도구**: Vite
+- **디자인 시스템**: Tailwind CSS 기반 전문 UI
+- **데이터 통신**: Axios 기반 S2S 명세 준수
+- **아이콘**: Lucide React
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 시작하기
+1. **패키지 설치**: `npm install`
+2. **개발 서버 실행**: `npm run dev` (기본 포트: 5173)
+3. **빌드**: `npm run build`
 
-## React Compiler
+## 📁 주요 구조
+- `src/pages/AdminDashboard`: 콜센터 대시보드 및 통계 화면
+- `src/pages/OutboundSystem`: 마케팅 대상자 조회 및 상담 실행 화면
+- `src/components/AdminStatCard`: 관리자용 통계 위젯
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+**DAVADA TM Center** - 데이터 중심의 소통, 안전한 상담. 🎧
