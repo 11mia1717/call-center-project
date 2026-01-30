@@ -14,6 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final OperatorTokenInterceptor operatorTokenInterceptor;
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private String[] allowedOrigins;
+
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(operatorTokenInterceptor)
@@ -23,9 +26,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173") // callcenter-web
-                .allowedMethods("*")
-                .allowedHeaders("*");
+        if (allowedOrigins != null) {
+            registry.addMapping("/**")
+                    .allowedOrigins(allowedOrigins) // callcenter-web
+                    .allowedMethods("*")
+                    .allowedHeaders("*");
+        }
     }
 }

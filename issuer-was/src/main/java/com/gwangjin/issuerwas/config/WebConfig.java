@@ -12,6 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final ServiceTokenInterceptor serviceTokenInterceptor;
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:5174}")
+    private String[] allowedOrigins;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(serviceTokenInterceptor)
@@ -19,10 +22,12 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(org.springframework.web.servlet.config.annotation.CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5174")
-                .allowedMethods("*")
-                .allowedHeaders("*");
+    public void addCorsMappings(@org.springframework.lang.NonNull org.springframework.web.servlet.config.annotation.CorsRegistry registry) {
+        if (allowedOrigins != null) {
+            registry.addMapping("/**")
+                    .allowedOrigins(allowedOrigins)
+                    .allowedMethods("*")
+                    .allowedHeaders("*");
+        }
     }
 }
